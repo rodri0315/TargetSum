@@ -2,18 +2,33 @@ import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
 import { Badge } from 'react-native-elements';
+import RandomNumber from './RandomNumber';
 
 export default class Game extends Component {
   static propTypes = {
     randomNumberCount: PropTypes.number.isRequired,
   };
+  state = {
+    selectedNumbers: [],
+  }
   randomNumbers = Array.from({
     length: this.props.randomNumberCount
   }).map(() => 1 + Math.floor(10 * Math.random()));
+  
   target = this.randomNumbers
     .slice(0, this.props.randomNumberCount - 2)
     .reduce((acc, curr) => acc + curr, 0);
   // TODO: Shuffle the random numbers 
+
+  isNumberSelected = (numberIndex) => {
+    return this.state.selectedNumbers.indexOf(numberIndex) >= 0;
+  }
+
+  selectNumber = (numberIndex) => {
+    return this.setState((prevState) => ({
+      selectedNumbers: [...prevState.selectedNumbers, numberIndex],
+    }));
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -25,11 +40,12 @@ export default class Game extends Component {
         <View style={styles.ranNumContainer} >
           {
             this.randomNumbers.map((randomNumber, index) =>
-              <Badge
+              <RandomNumber 
                 key={index}
-                containerStyle={styles.random}
-                value={randomNumber}
-                textStyle={{fontSize: 35, color: 'white'}}
+                id={index}
+                number={randomNumber}
+                isDisabled={this.isNumberSelected(index)}
+                onPress={this.selectNumber}
               />
             )
           }
@@ -57,11 +73,4 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
   },
-  random: {
-    backgroundColor: '#1E90FF',
-    alignItems: 'center',
-    marginVertical: 25,
-    marginHorizontal: 15,
-    width: 100
-  }
 });
