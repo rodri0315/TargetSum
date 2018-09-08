@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
 import { Badge, Button } from 'react-native-elements';
 import RandomNumber from './RandomNumber';
@@ -11,6 +11,7 @@ export default class Game extends Component {
   static propTypes = {
     randomNumberCount: PropTypes.number.isRequired,
     initialSeconds: PropTypes.number.isRequired,
+    onPlayAgain: PropTypes.func.isRequired,
   };
   state = {
     selectedIds: [],
@@ -87,6 +88,23 @@ export default class Game extends Component {
   }
   render() {
     const gameStatus = this.gameStatus;
+    let remainingSeconds = 'Playing... ' + this.state.remainingSeconds;
+    const playButton = this.gameStatus !== 'PLAYING' ? 
+      <Button 
+        buttonStyle={styles.playButton}
+        title='Play Again'
+        onPress={this.props.onPlayAgain}
+        backgroundColor='orange'
+        icon={{name: 'repeat', type: 'font-awesome'}}
+      /> : // else
+      <Button 
+        buttonStyle={styles.playButton}
+        title={remainingSeconds}
+        onPress={this.props.onPlayAgain}
+        icon={{name: 'play', type: 'font-awesome'}}
+        disabled={true}
+        disabledStyle={{backgroundColor: 'rgba(0,128,128, 0.4)'}}
+      />;
     return (
       <View style={styles.container}>
         <Badge
@@ -107,13 +125,7 @@ export default class Game extends Component {
             )
           }
         </View>
-        <Button 
-          title='Play Again'
-          onPress={() => {}}
-          backgroundColor='orange'
-          icon={{name: 'hourglass-start', type: 'font-awesome'}}
-        />
-        <Text>{this.state.remainingSeconds}</Text>
+        {playButton}
       </View>
     );
   }
@@ -146,4 +158,7 @@ const styles = StyleSheet.create({
   STATUS_LOST: {
     backgroundColor: 'tomato',
   },
+  playButton: {
+    marginBottom: 50,
+  }
 });
